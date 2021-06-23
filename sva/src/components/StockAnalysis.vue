@@ -7,6 +7,7 @@
           <el-upload
             action="http://127.0.0.1:8000/api/stock/uploadBlock?type=excel"
             :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
             multiple
             name="file"
             :limit="3"
@@ -18,6 +19,7 @@
           <el-upload
             action="http://127.0.0.1:8000/api/stock/uploadStrength?type=excel"
             :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
             multiple
             name="file"
             :limit="3"
@@ -28,10 +30,10 @@
           </el-upload>
         </el-row>
         <el-tabs @tab-click="changeView">
-          <el-tab-pane label="板块" name="first"></el-tab-pane>
-          <el-tab-pane label="强度" name="second"></el-tab-pane>
+          <el-tab-pane label="板块" name="block"></el-tab-pane>
+          <el-tab-pane label="强度" name="strength"></el-tab-pane>
         </el-tabs>
-        <div v-show="showOption">
+        <div v-show="showOption == 'block'">
           <el-table :data="blockTableData" stripe style="width: 100%">
             <el-table-column prop="code" label="代码" sortable>
             </el-table-column>
@@ -89,7 +91,7 @@
           <LineCharts />
         </el-dialog>
 
-        <div v-show="!showOption">
+        <div v-show="showOption == 'strength'">
           <el-table :data="strengthTableData" stripe style="width: 100%">
             <el-table-column prop="industry" label="行业" sortable>
             </el-table-column>
@@ -130,7 +132,7 @@
 <script setup>
 import { defineProps, reactive, ref } from "vue";
 import LineCharts from "./LineCharts.vue";
-import { ElMessage } from 'element-plus'
+import { ElMessage } from "element-plus";
 import axios from "axios";
 import moment from "moment";
 
@@ -138,11 +140,11 @@ let blockTableData = ref([]);
 let strengthTableData = ref([]);
 let strengthDate = ref(moment().format("YYYY-MM-DD"));
 let blockDate = ref(moment().format("YYYY-MM-DD"));
-let fileList = [];
-let showOption = ref(true);
-let search = null;
+let fileList = ref([]);
+let showOption = ref("block");
 let lineChartVisible = ref(false);
 let lineChartParam = ref({});
+let search = null;
 
 getStrengths(moment().format("YYYY-MM-DD"));
 getBlocks(moment().format("YYYY-MM-DD"));
@@ -178,8 +180,8 @@ function getBlocks() {
     });
 }
 
-function changeView() {
-  showOption.value = !showOption.value;
+function changeView(tab, event) {
+  showOption.value = tab.props.name;
 }
 
 function dateFormat(row, column) {
@@ -195,6 +197,12 @@ function handleUploadSuccess(file, fileList) {
     message: "上传成功！",
     type: "success",
   });
+  getStrengths(moment().format("YYYY-MM-DD"));
+  getBlocks(moment().format("YYYY-MM-DD"));
+}
+
+function handleUploadError(file, fileList) {
+  ElMessage.error("上传失败！请检查文件格式是否正确（传错文件、缺列、列名包含多余空格、文件类型错误等）");
 }
 
 function handleExceed(files, fileList) {
