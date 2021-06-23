@@ -23,6 +23,11 @@ class BlockModel(MysqlHelper):
 
     def get_all_blocks(self, params):
         sql = """SELECT * FROM block
+                 WHERE DATE_FORMAT(date,'%%Y-%%m-%%d')=%s"""
+        return self.get_all(sql, (params["date"]))
+
+    def get_all_blocks_in_range(self, params):
+        sql = """SELECT * FROM block
                  WHERE code=%s
                  AND DATE_FORMAT(date,'%%Y-%%m-%%d')>=%s
                  AND DATE_FORMAT(date,'%%Y-%%m-%%d')<=%s"""

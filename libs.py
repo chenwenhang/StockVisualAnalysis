@@ -1,19 +1,31 @@
 import json
 from datetime import datetime, date
 
+from flask import make_response
+
 
 def wrap_success(data):
-    return {
+    headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': '*'
+    }
+    return make_response(convert_to_json({
         "code": "ok",
         "data": convert_to_json(data),
-    }
+    }), 200, headers)
 
 
 def wrap_fail(msg):
-    return {
+    headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': '*'
+    }
+    return make_response(convert_to_json({
         "code": "fail",
         "msg": msg
-    }
+    }), 200, headers)
 
 
 def convert_to_json(data):

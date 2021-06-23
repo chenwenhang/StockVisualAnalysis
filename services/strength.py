@@ -25,6 +25,8 @@ def get_strengths(query_dict):
     model = StrengthModel()
     try:
         data = model.get_all_strengths(query_dict)
+        for i in range(len(data)):
+            data[i].update({"total": INDUSTRY_NUM_MAP[data[i]["industry"]]})
     except Exception as e:
         raise e
     return data
@@ -34,6 +36,15 @@ def get_blocks(query_dict):
     model = BlockModel()
     try:
         data = model.get_all_blocks(query_dict)
+    except Exception as e:
+        raise e
+    return data
+
+
+def get_blocks_in_range(query_dict):
+    model = BlockModel()
+    try:
+        data = model.get_all_blocks_in_range(query_dict)
     except Exception as e:
         raise e
     return data

@@ -4,7 +4,7 @@ from flask_restful import Resource, abort
 
 from libs import wrap_success, wrap_fail
 from services.block import upload_block
-from services.strength import upload_strength, get_strengths, get_blocks
+from services.strength import upload_strength, get_strengths, get_blocks, get_blocks_in_range
 
 
 class Stock(Resource):
@@ -13,6 +13,8 @@ class Stock(Resource):
             return _get_strengths()
         elif action == "getBlocks":
             return _get_blocks()
+        elif action == "getBlocksInRange":
+            return _get_blocks_in_range()
         else:
             abort(404)
 
@@ -39,11 +41,22 @@ def _get_strengths():
 def _get_blocks():
     try:
         query_dict = {
+            "date": request.args["date"],
+        }
+        res = get_blocks(query_dict)
+        return wrap_success(res)
+    except Exception as e:
+        return wrap_fail(e)
+
+
+def _get_blocks_in_range():
+    try:
+        query_dict = {
             "code": request.args["code"],
             "start_date": request.args["start_date"],
             "end_date": request.args["end_date"]
         }
-        res = get_blocks(query_dict)
+        res = get_blocks_in_range(query_dict)
         return wrap_success(res)
     except Exception as e:
         return wrap_fail(e)
