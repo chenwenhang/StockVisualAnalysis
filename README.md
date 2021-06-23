@@ -17,6 +17,9 @@ Stock Visual Analysis System
 
 Manual deployment：
 ```bash
+# create database 'stock' with encoding 'utf8'
+# and run DDL sql in ./model
+
 # start server
 python app.py # listen port 8000
 
